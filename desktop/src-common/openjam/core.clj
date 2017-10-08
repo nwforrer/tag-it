@@ -51,7 +51,7 @@
   (fn [screen entities]
     (update! screen
              :background-music (music "10 - The Empire.ogg" :set-looping true :play)
-             :spray-sound (sound "spraycan.mp3")
+             :spray-sound (sound "spraycan.wav")
              :siren-sound (sound "siren.wav"))
     (->> (orthogonal-tiled-map "level1.tmx" (/ 1 u/pixels-per-tile))
          (update! screen :playing? true :loaded? false :timeline [] :camera (orthographic) :renderer)))
