@@ -1,52 +1,79 @@
 (ns openjam.entities
   (:require [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
+            [play-clj.math :refer :all]
             [openjam.utils :as u]))
 
 (defn create-player
-  [stand jump & walk]
-  (assoc stand
-         :stand-right stand
-         :stand-left (texture stand :flip true false)
-         :jump-right jump
-         :jump-left (texture jump :flip true false)
-         :walk-right (animation u/duration
-                                walk
-                                :set-play-mode (play-mode :loop-pingpong))
-         :walk-left (animation u/duration
-                               (map #(texture % :flip true false) walk)
-                               :set-play-mode (play-mode :loop-pingpong))
-         :width 1
-         :height 1;;(/ 26 18)
-         :x-velocity 0
-         :y-velocity 0
-         :x 20
-         :y 2
-         :me? true
-         :can-jump? false
-         :direction :right))
+  [screen stand jump spray & walk]
+  (let [object (map-objects! (map-layer!
+                              (map-layer screen "player")
+                              :get-objects) :get 0)
+        props (map-object! object :get-properties)
+        direction (if (= (.get props
+                               "direction") "right")
+                    :right
+                    :left)
+        x (/ (rectangle! (map-object! object :get-rectangle) :get-x) u/pixels-per-tile)
+        y (/ (rectangle! (map-object! object :get-rectangle) :get-y) u/pixels-per-tile)]
+    (assoc stand
+           :stand-right stand
+           :stand-left (texture stand :flip true false)
+           :jump-right jump
+           :jump-left (texture jump :flip true false)
+           :spray-right spray
+           :spray-left (texture spray :flip true false)
+           :walk-right (animation u/duration
+                                  walk
+                                  :set-play-mode (play-mode :loop-pingpong))
+           :walk-left (animation u/duration
+                                 (map #(texture % :flip true false) walk)
+                                 :set-play-mode (play-mode :loop-pingpong))
+           :width 1
+           :height 1;;(/ 26 18)
+           :x-velocity 0
+           :y-velocity 0
+           :x x
+           :y y
+           :me? true
+           :spraying? false
+           :can-jump? false
+           :direction direction)))
 
 (defn create-police
-  [stand jump & walk]
-  (assoc stand
-         :stand-right stand
-         :stand-left (texture stand :flip true false)
-         :jump-right jump
-         :jump-left (texture jump :flip true false)
-         :walk-right (animation u/duration
-                                walk
-                                :set-play-mode (play-mode :loop-pingpong))
-         :walk-left (animation u/duration
-                               (map #(texture % :flip true false) walk)
-                               :set-play-mode (play-mode :loop-pingpong))
-         :width 1
-         :height 1;;(/ 26 18)
-         :x-velocity (* 1 u/max-ai-velocity)
-         :y-velocity 0
-         :x 15
-         :y 10
-         :can-jump? false
-         :direction :right))
+  [screen stand & walk]
+  (let [objects (map-layer!
+                 (map-layer screen "enemies")
+                 :get-objects)]
+    (map (fn [object]
+           (let [props (map-object! object :get-properties)
+                 direction (if (= (.get props
+                                   "direction") "right")
+                             :right
+                             :left)
+                 sight (.get props "sight")
+                 x-velocity (if (= direction :right)
+                              u/max-ai-velocity
+                              (* -1 u/max-ai-velocity))]
+             (assoc stand
+                    :stand-right stand
+                    :stand-left (texture stand :flip true false)
+                    :walk-right (animation u/duration
+                                           walk
+                                           :set-play-mode (play-mode :loop-pingpong))
+                    :walk-left (animation u/duration
+                                          (map #(texture % :flip true false) walk)
+                                          :set-play-mode (play-mode :loop-pingpong))
+                    :width 1
+                    :height 1
+                    :x-velocity x-velocity
+                    :y-velocity 0
+                    :x (/ (rectangle! (map-object! object :get-rectangle) :get-x) u/pixels-per-tile)
+                    :y (/ (rectangle! (map-object! object :get-rectangle) :get-y) u/pixels-per-tile)
+                    :can-jump? false
+                    :direction direction
+                    :sight (read-string sight))))
+         objects)))
 
 (defn move
   [{:keys [delta-time]} {:keys [x y me? can-jump?] :as entity}]
@@ -65,18 +92,12 @@
              :can-jump? (if (> y-velocity 0) false can-jump?))
       entity)))
 
-(defn spray
-  [screen {:keys [x me?] :as entity}]
-  (let [entity-x (assoc entity :x (inc x))]
-    (when (and me? (key-pressed? :enter) (u/get-touching-tile screen entity-x "graffiti"))
-      (map-layer! (map-layer screen "graffiti") :set-visible true)
-      (map-layer! (map-layer screen "hint") :set-visible false)))
-  entity)
-
 (defn animate
-  [screen {:keys [x-velocity y-velocity
+  [screen {:keys [me?
+                  x-velocity y-velocity
                   stand-right stand-left
                   jump-right jump-left
+                  spray-right spray-left
                   walk-right walk-left] :as entity}]
   (let [direction (u/get-direction entity)]
     (merge entity
@@ -87,6 +108,10 @@
              (if (= direction :right)
                (animation->texture screen walk-right)
                (animation->texture screen walk-left))
+             (and me? (key-pressed? :enter))
+             (if (= direction :right)
+               spray-right
+               spray-left)
              :else
              (if (= direction :right) stand-right stand-left))
            {:direction direction})))
@@ -99,9 +124,9 @@
         entity-y (assoc entity :x old-x)
         up? (> y-change 0)]
     (merge entity
-           (when (or (u/get-touching-tile screen entity-x "walls") (u/get-touching-tile screen entity-x "building"))
+           (when (or (u/get-touching-tile screen entity-x "walls" "building"))
              {:x-velocity 0 :x-change 0 :x old-x})
-           (when-let [tile (or (u/get-touching-tile screen entity-y "walls") (u/get-touching-tile screen entity-x "building"))]
+           (when-let [tile (or (u/get-touching-tile screen entity-y "walls" "building"))]
              {:y-velocity 0 :y-change 0 :y old-y
               :can-jump? (not up?) :to-destroy false})
            (if (and (not me?) (u/get-touching-tile screen entity-x "turns"))
