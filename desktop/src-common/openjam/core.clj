@@ -19,6 +19,18 @@
                         :set-cell tile-x tile-y nil)))
   (map #(dissoc % :to-destroy) entities))
 
+(defn detect!
+  "Determines if the player is seen by a police officer. If so, game over."
+  [screen entities]
+  (let [player (first (filter :me? entities))
+        police (remove :me? entities)]
+    (doseq [{:keys [x y direction]} police]
+      (if (and (= (int (:y player)) (int y))
+               (or (and (= direction :right) (> (:x player) x))
+                   (and (= direction :left) (< (:x player) x))))
+        (set-screen! openjam-game main-screen text-screen))))
+  entities)
+
 (defscreen main-screen
   :on-show
   (fn [screen entities]
@@ -49,6 +61,7 @@
                            (e/animate screen)
                            (e/spray screen)))
                     entities))
+             (detect! screen)
              (render! screen)
              (update-screen! screen)))
   

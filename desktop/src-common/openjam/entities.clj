@@ -20,8 +20,8 @@
          :height 1;;(/ 26 18)
          :x-velocity 0
          :y-velocity 0
-         :x 10
-         :y 10
+         :x 20
+         :y 2
          :me? true
          :can-jump? false
          :direction :right))
@@ -41,23 +41,23 @@
                                :set-play-mode (play-mode :loop-pingpong))
          :width 1
          :height 1;;(/ 26 18)
-         :x-velocity 0
+         :x-velocity (* 1 u/max-ai-velocity)
          :y-velocity 0
-         :x 10
+         :x 15
          :y 10
          :can-jump? false
          :direction :right))
 
 (defn move
-  [{:keys [delta-time]} {:keys [x y can-jump?] :as entity}]
+  [{:keys [delta-time]} {:keys [x y me? can-jump?] :as entity}]
   (let [x-velocity (u/get-x-velocity entity)
         y-velocity (+ (u/get-y-velocity entity) u/gravity)
         x-change (* x-velocity delta-time)
         y-change (* y-velocity delta-time)]
     (if (or (not= 0 x-change) (not= 0 y-change))
       (assoc entity
-             :x-velocity (u/decelerate x-velocity)
-             :y-velocity (u/decelerate y-velocity)
+             :x-velocity (u/decelerate me? x-velocity)
+             :y-velocity (u/decelerate me? y-velocity)
              :x-change x-change
              :y-change y-change
              :x (+ x x-change)
@@ -92,7 +92,7 @@
            {:direction direction})))
 
 (defn prevent-move
-  [screen {:keys [x y x-change y-change] :as entity}]
+  [screen {:keys [x y x-change y-change x-velocity me?] :as entity}]
   (let [old-x (- x x-change)
         old-y (- y y-change)
         entity-x (assoc entity :y old-y)
@@ -103,4 +103,8 @@
              {:x-velocity 0 :x-change 0 :x old-x})
            (when-let [tile (or (u/get-touching-tile screen entity-y "walls") (u/get-touching-tile screen entity-x "building"))]
              {:y-velocity 0 :y-change 0 :y old-y
-              :can-jump? (not up?) :to-destroy false}))));;(when up? tile)}))))
+              :can-jump? (not up?) :to-destroy false})
+           (if (and (not me?) (u/get-touching-tile screen entity-x "turns"))
+             (if (= direction :left)
+               {:direction :right :x-velocity (* -1 x-velocity)}
+               {:direction :left :x-velocity (* -1 x-velocity)})))));;(when up? tile)}))))

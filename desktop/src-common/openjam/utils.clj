@@ -6,16 +6,18 @@
 (def ^:const duration 0.15)
 (def ^:const damping 0.5)
 (def ^:const max-velocity 14)
+(def ^:const max-ai-velocity 1)
 (def ^:const max-jump-velocity (* max-velocity 4))
 (def ^:const deceleration 0.9)
 (def ^:const gravity -2.5)
 
 (defn decelerate
-  [velocity]
-  (let [velocity (* velocity deceleration)]
-    (if (< (Math/abs velocity) damping)
-      0
-      velocity)))
+  [me? velocity]
+  (if me? (let [velocity (* velocity deceleration)]
+            (if (< (Math/abs velocity) damping)
+              0
+              velocity))
+      velocity))
 
 (defn touched?
   [key]
