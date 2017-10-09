@@ -1,6 +1,12 @@
 ## Introduction
 
-A play-clj game in which ... well, that part is up to you.
+Make your mark across the city, but don't get caught!
+
+## Credits
+
+All artwork and programming by Nick Forrer.
+Music by Avgvst on opengameart.org, licensed by CC-BY.
+Sound effects licensed in the public domain.
 
 ## Contents
 
