@@ -211,7 +211,7 @@
   :show-intro
   (fn [screen entities]
     (let [intro-label (assoc (label
-                              "You are on a mission to leave your mark accross the city,\nbut don't get caught by the police!\n When you find the ideal place to tag, press Enter.\n\n Press enter to start!" (color :white))
+                              "You are on a mission to leave your mark accross the city,\nbut don't get caught by the police!\nUse the arrow keys to move, and up to jump.\n When you find the ideal place to tag, press Enter.\n\n Press enter to start!" (color :white))
                              :id :intro
                              :x 70
                              :y 100)]
