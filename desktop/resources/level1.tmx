@@ -4,8 +4,8 @@
   <property name="next-map" value="level2.tmx"/>
  </properties>
  <tileset firstgid="1" source="city.tsx"/>
- <tileset firstgid="13" source="graffiti.tsx"/>
- <tileset firstgid="14" source="hint.tsx"/>
+ <tileset firstgid="13" source="hint.tsx"/>
+ <tileset firstgid="14" source="graffiti.tsx"/>
  <layer name="sky" width="50" height="20">
   <data encoding="base64" compression="zlib">
    eJztwzENAAAMBKGb3r/kyugCCaumqqqqvj5kORdx
@@ -25,22 +25,22 @@
  </objectgroup>
  <layer name="walls" width="50" height="20">
   <data encoding="base64" compression="zlib">
-   eJzt0rENACAMA8Egwv4rwwo0RAp30vcuHAEAQAfzlBetmpk85BP8YjRpAwa6AJs=
+   eJzt0zEOABAQRUGC+1+ZUjTKjTWTvH6L/aUAwLvaqm+N2HMg1LmHW/aSn5/gFzVJE7bqAK8=
   </data>
  </layer>
  <layer name="building" width="50" height="20">
   <data encoding="base64" compression="zlib">
-   eJztzzEKACAQA8Er9f7/YG0EkatsTGQH0mcjAPyiz7Vt+fbOlbPBtaVqWHNChxY6tNChhQ4tdGihw8cATxADPw==
+   eJzt0TEKACAMQ9GM6v0PrIsgwcnFJuRD6dpHgZSSS31NO2b8PecpNqhaboY9Srk5QFvV4fKPOGrk5gBtVYfLP+KoURw6TXiBAx8=
   </data>
  </layer>
  <layer name="hint" width="50" height="20">
   <data encoding="base64" compression="zlib">
-   eJztzjENAAAIA7ApwL9cNOwiIa2CJgAAtOY6AMA7C2ioAA8=
+   eJztzjENAAAIA7AZwL9dNOwiIa2CJgAAtOY6AMA7C2JMAA4=
   </data>
  </layer>
  <layer name="turns" width="50" height="20" visible="0">
   <data encoding="base64" compression="zlib">
-   eJzt0jENAAAIBLFXgH+5uAAS2v22SwAA/qrhjvs8AWxpP78AOQ==
+   eJzt0jENAAAIBLE3gH+7uAAS2v22SwAA/qrhjvs8AWxpKgcANQ==
   </data>
  </layer>
  <objectgroup name="enemies">
@@ -59,7 +59,7 @@
  </objectgroup>
  <layer name="graffiti" width="50" height="20" visible="0">
   <data encoding="base64" compression="zlib">
-   eJztzjENAAAIA7AZwL9dNOwiIa2CJgAAtOY6AMA7C2JMAA4=
+   eJztzjENAAAIA7ApwL9cNOwiIa2CJgAAtOY6AMA7C2ioAA8=
   </data>
  </layer>
 </map>

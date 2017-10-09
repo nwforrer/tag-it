@@ -11,8 +11,10 @@
 (def ^:const max-jump-velocity (* max-velocity 4))
 (def ^:const deceleration 0.9)
 (def ^:const gravity -2.5)
+(def ^:const level1 "level1.tmx")
 
-(def current-level (atom "level1.tmx"))
+(def current-level (atom level1))
+(def show-intro (atom true))
 
 (defn decelerate
   [me? velocity]

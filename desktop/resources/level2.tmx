@@ -1,37 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="50" height="20" tilewidth="64" tileheight="64" nextobjectid="2">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="50" height="20" tilewidth="64" tileheight="64" nextobjectid="6">
+ <properties>
+  <property name="next-map" value="level3.tmx"/>
+ </properties>
  <tileset firstgid="1" source="city.tsx"/>
+ <tileset firstgid="13" source="hint.tsx"/>
+ <tileset firstgid="14" source="graffiti.tsx"/>
  <layer name="sky" width="50" height="20">
   <data encoding="base64" compression="zlib">
    eJztwzENAAAMBKGb3r/kyugCCaumqqqqvj5kORdx
   </data>
  </layer>
+ <layer name="clouds" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJzt0bEJAEAIQ1G7239jF0gjqBfhv1okxgjAy/sdwMhkFx27+dUu+q6p9qXmNzt3/697PuVC5omMF+4GAGgJSQkAXA==
+  </data>
+ </layer>
  <layer name="walls" width="50" height="20">
   <data encoding="base64" compression="zlib">
-   eJztw4EJAAAMAqD6/+nu2FAwAQAAgLv65AAjjAAz
+   eJxjYBgFo2AUjIJRMFIBMxCzQDHrALtlFIwCegHkdI8Lj+aHUTAYAa60S0p6HS33R8FwBYzDBAMAaXYAlw==
   </data>
  </layer>
  <objectgroup name="player">
-  <object id="1" x="1168" y="778" width="34" height="40">
+  <object id="1" x="214" y="780" width="34" height="40">
    <properties>
-    <property name="direction" value="left"/>
+    <property name="direction" value="right"/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="enemies"/>
- <layer name="building" width="50" height="20">
+ <objectgroup name="enemies">
+  <object id="2" x="532" y="1040" width="32" height="34">
+   <properties>
+    <property name="direction" value="right"/>
+    <property name="sight" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="3" x="1678" y="1034" width="32" height="34">
+   <properties>
+    <property name="direction" value="left"/>
+    <property name="sight" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="4" x="1742" y="1034" width="32" height="34">
+   <properties>
+    <property name="direction" value="right"/>
+    <property name="sight" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="5" x="1678" y="590" width="38" height="38">
+   <properties>
+    <property name="direction" value="right"/>
+    <property name="sight" type="int" value="3"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="turns" width="50" height="20" visible="0">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20MH6AAAACAtwEPoAAB
+   eJzt1bENADAIAzAe6P/v9gHEElUMteeQMVQBAMzOoywAu9LN7u6Tzt9/yAURPwBP
   </data>
  </layer>
- <layer name="graffiti" width="50" height="20">
+ <layer name="building" width="50" height="20">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20MH6AAAACAtwEPoAAB
+   eJztzzENAAAMw7Ce44947yhUs6UASAIAAPDXnJr56LeNoABJ
+  </data>
+ </layer>
+ <layer name="graffiti" width="50" height="20" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJztzjEBAAAMAiATrH/cxdADEpAAAADAhmsHih4daAAP
   </data>
  </layer>
  <layer name="hint" width="50" height="20">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20MH6AAAACAtwEPoAAB
+   eJztzjEBAAAMAiALrH/dxdADEpAAAADAhmsHih4cbAAO
   </data>
  </layer>
 </map>
