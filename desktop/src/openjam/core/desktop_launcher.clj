@@ -6,5 +6,5 @@
 
 (defn -main
   []
-  (LwjglApplication. openjam-game "openjam" 800 600)
+  (LwjglApplication. openjam-game "Tag It" 800 600)
   (Keyboard/enableRepeatEvents true))

@@ -2,6 +2,7 @@
   (:require [play-clj.core :refer :all]))
 
 (def ^:const vertical-tiles 20)
+(def ^:const horizontal-tiles 50)
 (def ^:const pixels-per-tile 64)
 (def ^:const duration 0.15)
 (def ^:const damping 0.5)
@@ -11,6 +12,8 @@
 (def ^:const deceleration 0.9)
 (def ^:const gravity -2.5)
 
+(def current-level (atom "level1.tmx"))
+
 (defn decelerate
   [me? velocity]
   (if me? (let [velocity (* velocity deceleration)]
@@ -19,25 +22,13 @@
               velocity))
       velocity))
 
-(defn touched?
-  [key]
-  (and (game :touched?)
-       (case key
-         :down (< (game :y) (/ (game :height) 3))
-         :up (> (game :y) (* (game :height) (/ 2 3)))
-         :left (< (game :x) (/ (game :width) 3))
-         :right (> (game :x) (* (game :width) (/ 2 3)))
-         :center (and (< (/ (game :width) 3) (game :x) (* (game :width) (/ 2 3)))
-                      (< (/ (game :height) 3) (game :y) (* (game :height) (/ 2 3))))
-         false)))
-
 (defn get-x-velocity
   [{:keys [me? x-velocity]}]
   (if me?
     (cond
-      (or (key-pressed? :dpad-left) (touched? :left))
+      (key-pressed? :dpad-left)
       (* -1 max-velocity)
-      (or (key-pressed? :dpad-right) (touched? :right))
+      (key-pressed? :dpad-right)
       max-velocity
       :else
       x-velocity)
@@ -47,7 +38,7 @@
   [{:keys [me? y-velocity can-jump?]}]
   (if me?
     (cond
-      (and can-jump? (or (key-pressed? :dpad-up) (touched? :up)))
+      (and can-jump? (key-pressed? :dpad-up))
       max-jump-velocity
       :else
       y-velocity)

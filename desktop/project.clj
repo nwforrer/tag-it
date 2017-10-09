@@ -1,5 +1,5 @@
-(defproject openjam "0.0.1-SNAPSHOT"
-  :description "FIXME: write description"
+(defproject openjam "1.0.0"
+  :description "You need to tag buildings while avoiding getting caught by the cops."
   
   :dependencies [[com.badlogicgames.gdx/gdx "1.9.3"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl "1.9.3"]

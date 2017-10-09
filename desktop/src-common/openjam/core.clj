@@ -8,16 +8,20 @@
 (declare openjam-game title-screen main-screen text-screen)
 
 (defn update-screen!
-  [screen entities]
-  (doseq [{:keys [x y height me? to-destroy]} entities]
+  [{:keys [current-map] :as screen} entities]
+  (doseq [{:keys [x y height me?]} entities]
     (when me?
-      (position! screen x (/ u/vertical-tiles 2))
-      (when (< y (- height))
-        (set-screen! openjam-game main-screen text-screen)))
-    (when-let [[tile-x tile-y] to-destroy]
-      (tiled-map-layer! (tiled-map-layer screen "walls")
-                        :set-cell tile-x tile-y nil)))
-  (map #(dissoc % :to-destroy) entities))
+      (let [map-width (.get (.getProperties (.getMap current-map)) "width")
+            half-width (/ (width screen) 2)
+            new-x (if (< x half-width)
+                    half-width
+                    (if (> x (- map-width half-width))
+                      (- map-width half-width)
+                      x))]
+        (position! screen new-x (/ u/vertical-tiles 2))
+        (when (< y (- height))
+          (set-screen! openjam-game main-screen text-screen)))))
+  entities)
 
 (defn detect!
   "Determines if the player is seen by a police officer. If so, game over."
@@ -46,6 +50,30 @@
       (screen! text-screen :win)))
   entity)
 
+(defn load-level!
+  [screen level-name]
+  (if-let [current-map (:current-map screen)]
+    (tiled-map! screen :dispose))
+  (let [current-map (orthogonal-tiled-map level-name (/ 1 u/pixels-per-tile))]
+    (screen! text-screen :reset-labels)
+    (update! screen :playing? true :win? false :lose? false :loaded? false :timeline [] :camera (orthographic) :renderer current-map :current-map current-map))
+  [])
+
+(defn load-entities
+  [screen]
+  (let [sheet (texture "Artist.png")
+        police-sheet (texture "Police.png")
+        tiles (texture! sheet :split 64 64)
+        police-tiles (texture! police-sheet :split 64 64)
+        player-images (for [col [0 1 2 3 4 5 6]]
+                        (texture (aget tiles 0 col)))
+        police-images (for [col [0 1 2 3 4]]
+                        (texture (aget police-tiles 0 col)))
+        player (apply e/create-player screen player-images)
+        police (apply e/create-police screen police-images)]
+    (update! screen :loaded? true)
+    [player police]))
+
 (defscreen main-screen
   :on-show
   (fn [screen entities]
@@ -53,39 +81,29 @@
              :background-music (music "10 - The Empire.ogg" :set-looping true :play)
              :spray-sound (sound "spraycan.wav")
              :siren-sound (sound "siren.wav"))
-    (->> (orthogonal-tiled-map "level1.tmx" (/ 1 u/pixels-per-tile))
-         (update! screen :playing? true :loaded? false :timeline [] :camera (orthographic) :renderer)))
+      (load-level! screen @u/current-level))
   
   :on-render
   (fn [screen entities]
     (clear! 0.5 0.5 1 1)
     (if (not (:loaded? screen))
-      (let [sheet (texture "Artist.png")
-            police-sheet (texture "Police.png")
-            tiles (texture! sheet :split 64 64)
-            police-tiles (texture! police-sheet :split 64 64)
-            player-images (for [col [0 1 2 3 4 5 6]]
-                            (texture (aget tiles 0 col)))
-            police-images (for [col [0 1 2 3 4]]
-                            (texture (aget police-tiles 0 col)))
-            player (apply e/create-player screen player-images)
-            police (apply e/create-police screen police-images)]
-        (update! screen :loaded? true)
-        [player police])  
-      (some->> (if (or (key-pressed? :space) (u/touched? :center))
-                 (rewind! screen 2)
-                 (map (fn [entity]
-                        (if (:playing? screen)
-                          (->> entity
-                               (e/move screen)
-                               (e/prevent-move screen)
-                               (e/animate screen)
-                               (spray! screen))
-                          entity))
-                      entities))
+      (load-entities screen)
+      (some->> (map (fn [entity]
+                      (if (:playing? screen)
+                        (->> entity
+                             (e/move screen)
+                             (e/prevent-move screen)
+                             (e/animate screen)
+                             (spray! screen))
+                        entity))
+                    entities)
                (detect! screen)
                (render! screen)
                (update-screen! screen))))
+
+  :on-resume
+  (fn [screen entities]
+    entities)
   
   :on-resize
   (fn [{:keys [width height] :as screen} entities]
@@ -101,6 +119,11 @@
       (= (:key screen) (key-code :r))
       (do
         (music! (:background-music screen) :dispose)
+        (swap! u/current-level (fn [v] "level1.tmx"))
+        (set-screen! openjam-game main-screen text-screen))
+      (= (:key screen) (key-code :c))
+      (do
+        (music! (:background-music screen) :dispose)
         (set-screen! openjam-game main-screen text-screen))
       (= (:key screen) (key-code :escape))
       (set-screen! openjam-game title-screen)
@@ -108,7 +131,16 @@
       (let [bg-music (:background-music screen)]
         (if (music! bg-music :is-playing)
           (music! bg-music :pause)
-          (music! bg-music :play))))))
+          (music! bg-music :play)))
+      (= (:key screen) (key-code :enter))
+      (if (:win? screen)
+        (if-let [next-level (.get
+                             (.getProperties
+                              (.getMap (:current-map screen)))
+                             "next-map")]
+          (do (swap! u/current-level (fn [v] next-level))
+              (set-screen! openjam-game main-screen text-screen))
+           entities)))))
 
 (defscreen text-screen
   :on-show
@@ -133,8 +165,16 @@
           (assoc (label "You've made your mark!" (color :white))
                  :id :you-win
                  :x 200
-                 :y 200)]
-      (conj entities you-win-label)))
+                 :y 200)
+          continue-label (assoc (label "Press enter to continue..." (color :white))
+                                :id :continue
+                                :x 200
+                                :y 150)]
+      (conj entities you-win-label continue-label)))
+
+  :reset-labels
+  (fn [screen entities]
+    [])
     
   :on-render
   (fn [screen entities]

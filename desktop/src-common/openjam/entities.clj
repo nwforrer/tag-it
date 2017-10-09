@@ -132,4 +132,8 @@
            (if (and (not me?) (u/get-touching-tile screen entity-x "turns"))
              (if (= direction :left)
                {:direction :right :x-velocity (* -1 x-velocity)}
-               {:direction :left :x-velocity (* -1 x-velocity)})))));;(when up? tile)}))))
+               {:direction :left :x-velocity (* -1 x-velocity)}))
+           (when (<= x 0)
+             {:x-velocity 0 :x 0})
+           (when (>= x 49)
+             {:x-velocity 0 :x 49}))))

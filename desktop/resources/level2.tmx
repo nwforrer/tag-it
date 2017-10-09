@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="50" height="20" tilewidth="64" tileheight="64" nextobjectid="2">
+ <tileset firstgid="1" source="city.tsx"/>
+ <layer name="sky" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztwzENAAAMBKGb3r/kyugCCaumqqqqvj5kORdx
+  </data>
+ </layer>
+ <layer name="walls" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztw4EJAAAMAqD6/+nu2FAwAQAAgLv65AAjjAAz
+  </data>
+ </layer>
+ <objectgroup name="player">
+  <object id="1" x="1168" y="778" width="34" height="40">
+   <properties>
+    <property name="direction" value="left"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="enemies"/>
+ <layer name="building" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20MH6AAAACAtwEPoAAB
+  </data>
+ </layer>
+ <layer name="graffiti" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20MH6AAAACAtwEPoAAB
+  </data>
+ </layer>
+ <layer name="hint" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20MH6AAAACAtwEPoAAB
+  </data>
+ </layer>
+</map>
